@@ -1,30 +1,27 @@
-[
-  {
-    "name": "hello",
-    "data": [
-      [
-        {
-          "value": "A1",
-          "formatCode": "General"
-        },
-        {
-          "value": "B1",
-          "formatCode": "General"
-        }
-      ],
-      [
-        {
-          "value": "A2",
-          "formatCode": "General"
-        },
-        {
-          "value": "B2",
-          "formatCode": "General"
-        }
-      ]
+[{
+  "name": "mySheetName",
+  "data": [
+    [
+      1,
+      2,
+      3
     ],
-    "table": false,
-    "maxCol": 2,
-    "maxRow": 2
-  }
-]
+    [
+      true,
+      false,
+      null,
+      "sheetjs"
+    ],
+    [
+      "foo",
+      "bar",
+      41689.604166666664,
+      "0.3"
+    ],
+    [
+      "baz",
+      null,
+      "qux"
+    ]
+  ]
+}]

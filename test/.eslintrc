@@ -1,0 +1,12 @@
+{
+  "extends": "./../.eslintrc",
+  "env": {
+    "jest": true,
+    "jasmine": true
+  },
+  "rules": {
+    "func-names": "off",
+    "no-underscore-dangle": "off",
+    "import/no-extraneous-dependencies": "off"
+  }
+}

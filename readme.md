@@ -1,93 +1,155 @@
-**New Features Added:**
+# Node XLSX
 
-* More customizable options like font name and color.
-* Limited support for colSpan AND rowSpan.
-* Forced row height and column width.
-* Added textRotation.
-* Added page scale and sheet view option.
+[![npm version](https://img.shields.io/npm/v/node-xlsx.svg?style=flat)](https://www.npmjs.com/package/node-xlsx)
+[![license](https://img.shields.io/badge/license-Apache--2.0-green.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
+![status](https://img.shields.io/badge/status-maintained-brightgreen.svg)
+[![npm downloads](https://img.shields.io/npm/dm/node-xlsx.svg)](https://www.npmjs.com/package/node-xlsx)<br />
+[![build status](http://img.shields.io/travis/mgcrea/node-xlsx/master.svg?style=flat)](http://travis-ci.org/mgcrea/node-xlsx)
+[![dependencies status](https://img.shields.io/david/mgcrea/node-xlsx.svg?style=flat)](https://david-dm.org/mgcrea/node-xlsx)
+[![devDependencies status](https://img.shields.io/david/dev/mgcrea/node-xlsx.svg?style=flat)](https://david-dm.org/mgcrea/node-xlsx#info=devDependencies)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/5bbea5e7b2084c2586e5599cda6aefc8)](https://www.codacy.com/app/mgcrea/node-xlsx?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mgcrea/node-xlsx&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/5bbea5e7b2084c2586e5599cda6aefc8)](https://www.codacy.com/app/mgcrea/node-xlsx?utm_source=github.com&utm_medium=referral&utm_content=mgcrea/node-xlsx&utm_campaign=Badge_Coverage)
 
----
 
-[node-xlsx](http://mgcrea.github.com/node-xlsx) [![Build Status](https://secure.travis-ci.org/mgcrea/node-xlsx.png?branch=master)](http://travis-ci.org/#!/mgcrea/node-xlsx)
-=================
+Excel file parser/builder that relies on [js-xlsx](https://github.com/SheetJS/js-xlsx).
 
-Excel parser/builder that relies on [xlsx.js](https://raw.github.com/stephen-hardy/xlsx.js) (Microsoft Office Extensible File License), this package had to be released under the same restrictive license. Please read it carefully.
 
-An opensource alternative is currently being developped by [Niggler](https://github.com/Niggler/js-xlsx), reader-only for now.
+## Usage
+### Installation
+```npm install node-xlsx --save```
+### Examples
 
-Quick start
------------
+1. Parsing a xlsx from file/buffer, outputs an array of worksheets
 
-Parsing a xlsx from file/buffer
-``` javascript
-var xlsx = require('node-xlsx');
+```js
+import xlsx from 'node-xlsx';
+// Or var xlsx = require('node-xlsx').default;
 
-var obj = xlsx.parse(__dirname + '/myFile.xlsx'); // parses a file
-
-var obj = xlsx.parse(fs.readFileSync(__dirname + '/myFile.xlsx')); // parses a buffer
-
+// Parse a buffer
+const workSheetsFromBuffer = xlsx.parse(fs.readFileSync(`${__dirname}/myFile.xlsx`));
+// Parse a file
+const workSheetsFromFile = xlsx.parse(`${__dirname}/myFile.xlsx`);
 ```
 
-Building a plist from an object
-``` javascript
-var xlsx = require('node-xlsx');
+2. Building a xlsx
 
-var buffer = xlsx.build({worksheets: [
-  {"name":"mySheetName", "data":[
-    ["A1", "B1"],
-    [
-      {"value":"A2","formatCode":"General"},
-      {"value":"B2","formatCode":"General"}
-    ]
-  ]}
-]}); // returns a buffer
+```js
+import xlsx from 'node-xlsx';
+// Or var xlsx = require('node-xlsx').default;
 
+const data = [[1, 2, 3], [true, false, null, 'sheetjs'], ['foo', 'bar', new Date('2014-02-19T14:30Z'), '0.3'], ['baz', null, 'qux']];
+var buffer = xlsx.build([{name: "mySheetName", data: data}]); // Returns a buffer
 ```
 
-Testing
--------
+  * Custom column width
+```js
+import xlsx from 'node-xlsx';
+// Or var xlsx = require('node-xlsx').default;
 
-`node-xlsx` is tested with `nodeunit`.
+const data = [[1, 2, 3], [true, false, null, 'sheetjs'], ['foo', 'bar', new Date('2014-02-19T14:30Z'), '0.3'], ['baz', null, 'qux']]
+const options = {'!cols': [{ wch: 6 }, { wch: 7 }, { wch: 10 }, { wch: 20 } ]};
 
->
-	npm install --dev
-	npm test
+var buffer = xlsx.build([{name: "mySheetName", data: data}], options); // Returns a buffer
+```
 
-Contributing
-------------
+  * Spanning multiple rows `A1:A4` in every sheets
+```js
+import xlsx from 'node-xlsx';
+// Or var xlsx = require('node-xlsx').default;
+
+const data = [[1, 2, 3], [true, false, null, 'sheetjs'], ['foo', 'bar', new Date('2014-02-19T14:30Z'), '0.3'], ['baz', null, 'qux']];
+const range = {s: {c: 0, r:0 }, e: {c:0, r:3}}; // A1:A4
+const options = {'!merges': [ range ]};
+
+var buffer = xlsx.build([{name: "mySheetName", data: data}], options); // Returns a buffer
+```
+
+  * Spanning multiple rows `A1:A4` in second sheet only
+```js
+import xlsx from 'node-xlsx';
+// Or var xlsx = require('node-xlsx').default;
+
+const dataSheet1 = [[1, 2, 3], [true, false, null, 'sheetjs'], ['foo', 'bar', new Date('2014-02-19T14:30Z'), '0.3'], ['baz', null, 'qux']];
+const dataSheet2 = [[4, 5, 6], [7, 8, 9, 10], [11, 12, 13, 14], ['baz', null, 'qux']];
+const range = {s: {c: 0, r:0 }, e: {c:0, r:3}}; // A1:A4
+const sheetOptions = {'!merges': [ range ]};
+
+var buffer = xlsx.build([{name: "myFirstSheet", data: dataSheet1}, {name: "mySecondSheet", data: dataSheet2, options: sheetOptions}]); // Returns a buffer
+```
+_Beware that if you try to merge several times the same cell, your xlsx file will be seen as corrupted._
+
+
+  * Using Primitive Object Notation
+Data values can also be specified in a non-abstracted representation.
+
+Examples:
+```js
+const rowAverage = [[{t:'n', z:10, f:'=AVERAGE(2:2)'}], [1,2,3];
+var buffer = xlsx.build([{name: "Average Formula", data: rowAverage}]);
+```
+
+Refer to [xlsx](https://sheetjs.gitbooks.io) documentation for valid structure and values:
+- Cell Object: https://sheetjs.gitbooks.io/docs/#cell-object
+- Data Types: https://sheetjs.gitbooks.io/docs/#data-types
+- Format: https://sheetjs.gitbooks.io/docs/#number-formats
+
+
+
+### Troubleshooting
+
+This library requires at lease nodeJS v4. For legacy versions, you can use this workaround before using the lib.
+
+```
+npm i --save object-assign
+Object.prototype.assign = require('object-assign');
+```
+
+
+### Contributing
 
 Please submit all pull requests the against master branch. If your unit test contains javascript patches or features, you should include relevant unit tests. Thanks!
 
-Authors
--------
+
+### Available scripts
+
+| **Script** | **Description** |
+|----------|-------|
+| start | Alias of test:watch |
+| test | Run mocha unit tests |
+| test:watch | Run and watch mocha unit tests |
+| lint | Run eslint static tests |
+| compile | Compile the library |
+| compile:watch | Compile and watch the library |
+
+
+## Authors
 
 **Olivier Louvignes**
 
 + http://olouv.com
 + http://github.com/mgcrea
 
-Copyright and license
----------------------
 
-  This license governs use of the accompanying software. If you use the software, you
-   accept this license. If you do not accept the license, do not use the software.
+## Copyright and license
 
-  1. Definitions
-   The terms "reproduce," "reproduction," "derivative works," and "distribution" have the
-   same meaning here as under U.S. copyright law.
-   A "contribution" is the original software, or any additions or changes to the software.
-   A "contributor" is any person that distributes its contribution under this license.
-   "Licensed patents" are a contributor's patent claims that read directly on its contribution.
-   "Excluded Products” are software products or components, or web-based or hosted services, that primarily perform the same general functions as any of the following software applications: Microsoft Office, Word, Excel, PowerPoint, Outlook, OneNote, Publisher, SharePoint, or Access.
+[Apache License 2.0](https://spdx.org/licenses/Apache-2.0.html)
 
-  2. Grant of Rights
-   (A) Copyright Grant- Subject to the terms of this license, including the license conditions and limitations in section 3, each contributor grants you a non-exclusive, worldwide, royalty-free copyright license to reproduce its contribution, prepare derivative works of its contribution, and distribute its contribution or any derivative works that you create.
-   (B) Patent Grant- Subject to the terms of this license, including the license conditions and limitations in section 3, each contributor grants you a non-exclusive, worldwide, royalty-free license under its licensed patents to make, have made, use, sell, offer for sale, import, and/or otherwise dispose of its contribution in the software or derivative works of the contribution in the software.
+```
+Copyright (C) 2012-2014  Olivier Louvignes
 
-  3. Conditions and Limitations
-   (A) No Trademark License- This license does not grant you rights to use any contributors' name, logo, or trademarks.
-   (B) If you bring a patent claim against any contributor over patents that you claim are infringed by the software, your patent license from such contributor to the software ends automatically.
-   (C) If you distribute any portion of the software, you must retain all copyright, patent, trademark, and attribution notices that are present in the software.
-   (D) If you distribute any portion of the software in source code form, you may do so only under this license by including a complete copy of this license with your distribution. If you distribute any portion of the software in compiled or object code form, you may only do so under a license that complies with this license.
-   (E) The software is licensed "as-is." You bear the risk of using it. The contributors give no express warranties, guarantees or conditions. You may have additional consumer rights under your local laws which this license cannot change. To the extent permitted under your local laws, the contributors exclude the implied warranties of merchantability, fitness for a particular purpose and non-infringement.
-   (F) Platform Limitation- The licenses granted in sections 2(A) & 2(B) extend only to the software or derivative works that (1) are run on a Microsoft Windows operating system product, and (2) are not Excluded Products.
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+Except where noted, this license applies to any and all software programs and associated documentation files created by the Original Author and distributed with the Software:
+
+Inspired by SheetJS gist examples, Copyright (c) SheetJS.
+```
