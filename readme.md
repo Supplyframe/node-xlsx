@@ -41,6 +41,31 @@ const data = [[1, 2, 3], [true, false, null, 'sheetjs'], ['foo', 'bar', new Date
 var buffer = xlsx.build([{name: "mySheetName", data: data}]); // Returns a buffer
 ```
 
+3. Cell styling example
+
+```
+data.push([{
+    v: 'List URL',
+    s: {
+        fill: {
+            fgColor: {
+                rgb: "FFFFAA00"
+            }
+        },
+        font: {
+            name: 'Calibri',
+            sz: 14,
+            bold: true
+        }
+    },
+    l: {
+        Target: targetLink,
+        Tooltip: targetLink ? (`List URL ${targetLink.substr(0, 20)}...`) : null
+    }
+}]);
+
+```
+
   * Custom column width
 ```js
 import xlsx from 'node-xlsx';
@@ -48,6 +73,13 @@ import xlsx from 'node-xlsx';
 
 const data = [[1, 2, 3], [true, false, null, 'sheetjs'], ['foo', 'bar', new Date('2014-02-19T14:30Z'), '0.3'], ['baz', null, 'qux']]
 const options = {'!cols': [{ wch: 6 }, { wch: 7 }, { wch: 10 }, { wch: 20 } ]};
+options.defaultCellStyle: {
+    font: {
+        name: 'Calibri',
+        sz: 14,
+        bold: true
+    }
+}
 
 var buffer = xlsx.build([{name: "mySheetName", data: data}], options); // Returns a buffer
 ```
