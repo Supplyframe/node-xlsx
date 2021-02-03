@@ -19,7 +19,7 @@
   "dependencies": {
     "@babel/runtime": "^7.12.5",
     "buffer-from": "^1.1.1",
-    "xlsx": "git+ssh://git@github.com/Supplyframe/formula-validator.git#0.16.10"
+    "xlsx": "git+ssh://git@github.com/Supplyframe/sheetjs.git#0.16.10"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.10",
