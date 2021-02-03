@@ -4,6 +4,7 @@
   "version": "1.0.3",
   "description": "NodeJS Excel files parser & builder",
   "main": "src/index.js",
+  "type": "module",
   "scripts": {
     "start": "yarn test:watch",
     "test": "NODE_ENV=test jest --runInBand",
