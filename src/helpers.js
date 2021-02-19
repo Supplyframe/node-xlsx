@@ -73,5 +73,8 @@ export const buildSheetFromMatrix = (data, options = {}) => {
   if (options['!merges']) {
     workSheet['!merges'] = options['!merges'];
   }
+  if (options['!dataValidation']) {
+    workSheet['!dataValidation'] = options['!dataValidation'];
+  }
   return workSheet;
 };
