@@ -1,7 +1,7 @@
 {
   "name": "node-xlsx",
   "author": "Olivier Louvignes <olivier@mg-crea.com>",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "NodeJS Excel files parser & builder",
   "main": "lib/index.js",
   "scripts": {
@@ -19,7 +19,7 @@
   "dependencies": {
     "@babel/runtime": "^7.12.5",
     "buffer-from": "^1.1.1",
-    "xlsx": "git+ssh://git@github.com/Supplyframe/sheetjs.git#0.16.12"
+    "xlsx": "git+ssh://git@github.com/Supplyframe/sheetjs.git#v0.16.12"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.10",
